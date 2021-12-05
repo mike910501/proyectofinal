@@ -273,7 +273,7 @@ class _GestionClienteState extends State<GestionCliente> {
                       onPressed: (){
 
 
-                        if(codigo.text.isEmpty|nombre.text.isEmpty||direccion.text.isEmpty||telefono.text.isEmpty||celular.text.isEmpty){
+                        if(codigo.text.isEmpty||nombre.text.isEmpty||direccion.text.isEmpty||telefono.text.isEmpty||celular.text.isEmpty){
                           Fluttertoast.showToast(msg: "Ingrese todos los campos",
                             toastLength: Toast.LENGTH_LONG,
                             gravity: ToastGravity.CENTER,

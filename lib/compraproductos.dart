@@ -160,9 +160,10 @@ class _ComprasState extends State<Compras> {
   }
 }
 class BuscarNegocio extends StatefulWidget {
-  final String textdato;
 
-  BuscarNegocio({Key? key, required this.textdato}) : super(key: key);
+  var textdato;
+
+  BuscarNegocio({required this.textdato});
 
   @override
   State<BuscarNegocio> createState() => _BuscarNegocioState();
@@ -206,6 +207,7 @@ class _BuscarNegocioState extends State<BuscarNegocio> {
                                     print(lista);
                                     _count=lista.length;
                                     setState(() {
+                                      lista;
                                       _count;
                                     });
                                   },

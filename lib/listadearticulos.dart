@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import'package:fluttertoast/fluttertoast.dart';
 import 'package:loginfinal/main.dart';
 import 'package:loginfinal/registrarclientes.dart';
+import 'package:loginfinal/validadorregistro.dart';
 
 
 class MostrarCarrito extends StatelessWidget {
@@ -22,8 +23,10 @@ class MostrarCarrito extends StatelessWidget {
   }
 }
 class ListaCompra extends StatefulWidget {
+
   final tt=0;
   List lista=[];
+  List listaNom=[];
   ListaCompra({required this.lista});
   @override
   _ListaCompraState createState() => _ListaCompraState();
@@ -31,10 +34,10 @@ class ListaCompra extends StatefulWidget {
 }
 
 class _ListaCompraState extends State<ListaCompra> {
-
+  String nom='';
   var total;
-  CollectionReference datosventas = FirebaseFirestore.instance.collection(
-      'ventas');
+  CollectionReference datosventas = FirebaseFirestore.instance.collection('ventas');
+  CollectionReference datoscliente=FirebaseFirestore.instance.collection('clientes');
   final correo = TextEditingController();
   final direccion = TextEditingController();
   final celular = TextEditingController();
@@ -119,40 +122,6 @@ class _ListaCompraState extends State<ListaCompra> {
                           child: Text(''),
                         );
 
-                        /*
-                          ElevatedButton.icon(
-                            label: Text("Ver precio de su compra",
-                              textAlign: TextAlign.center,),
-                            icon: Icon(Icons.shopping_cart,
-                              size: 20,
-                              color: Colors.orange,
-
-                            ),
-                            onPressed: () {
-                              total = 0;
-                              var tt;
-                              for (int i = 0; i < widget.lista.length; i++) {
-                                tt = int.parse(widget.lista[i][1]);
-                                total = tt + total;
-                                setState(() {
-                                  _counter = widget.lista.length;
-                                  print(_counter);
-                                });
-
-                                Fluttertoast.showToast(
-                                    msg: "El valor de su compra es " +
-                                        total.toString(),
-                                    fontSize: 20,
-                                    backgroundColor: Colors.red,
-                                    textColor: Colors.blueGrey,
-                                    toastLength: Toast.LENGTH_SHORT,
-                                    gravity: ToastGravity.CENTER
-                                );
-                              }
-                            },
-
-                          );
-                        */
                       }
                   ),
                   Container(
@@ -167,6 +136,7 @@ class _ListaCompraState extends State<ListaCompra> {
                         var tt;
                         for (int i = 0; i < widget.lista.length; i++) {
                           tt = int.parse(widget.lista[i][1]);
+                          _counter=widget.lista.length;
                           total = tt + total;
                           print(total);
 
@@ -174,13 +144,14 @@ class _ListaCompraState extends State<ListaCompra> {
                               msg: "El valor de su compra es " +
                                   total.toString(),
                               fontSize: 20,
-                              backgroundColor: Colors.red,
+                              backgroundColor: Colors.amber,
                               textColor: Colors.blueGrey,
                               toastLength: Toast.LENGTH_SHORT,
                               gravity: ToastGravity.CENTER
                           );
                           setState(() {
                             total;
+                            _counter;
                           });
                         }
                           showDialog(context: context, builder: (context) {
@@ -205,16 +176,23 @@ class _ListaCompraState extends State<ListaCompra> {
                                       ),
 
                                     ),
-                                    Container(
-                                      child: TextField(
-                                        controller: correo,
-                                        decoration: InputDecoration(
-                                          label: Text('Correo electronico'),
-                                          border: OutlineInputBorder(),
-                                        ),
-                                      ),
-                                      height: 70,
-                                      width: 200,
+                                    Builder(
+                                      builder: (context) {
+
+                                            nom=correo.text;
+
+                                        return Container(
+                                          child: TextField(
+                                            controller: correo,
+                                            decoration: InputDecoration(
+                                              label: Text('Correo electronico'),
+                                              border: OutlineInputBorder(),
+                                            ),
+                                          ),
+                                          height: 70,
+                                          width: 200,
+                                        );
+                                      }
                                     ),
                                     Container(
 
@@ -228,28 +206,38 @@ class _ListaCompraState extends State<ListaCompra> {
                                       width: 200,
                                       height: 70,
                                     ),
-                                    Container(
 
-                                      child: TextField(
-                                        controller: celular,
-                                        decoration: InputDecoration(
-                                          label: Text('Numero de Celular'),
-                                          border: OutlineInputBorder(),
-                                        ),
-                                      ),
-                                      width: 200,
-                                      height: 70,
-                                    ),
                                     FloatingActionButton.extended(
 
                                       //label: const T
                                       backgroundColor: Colors.amber,
                                       onPressed: () {
+                                        List nuevalista = [];
+                                        for (int i = 0; i < widget.lista.length; i++) {
+                                          nuevalista.add(widget.lista[i][0]);
+                                        }
+                                        print('regitro de compra');
+                                        datosventas.doc().set({
+                                          'Producto': nuevalista,
+                                          'ValorCompra': total
+
+                                        }
+                                        );
+                                        datoscliente.doc().set({
+                                          "nombre": correo.text,
+                                          "direccion": direccion.text,
+                                        });
+                                        Fluttertoast.showToast(
+                                            msg: "Su pedido ha sido registrado exitosamente" + "\n" + "Será enviado a la dirección: " + direccion.text,
+                                            fontSize: 20,
+                                            backgroundColor: Colors.amber,
+                                            textColor: Colors.blueGrey,
+                                            toastLength: Toast.LENGTH_SHORT,
+                                            gravity: ToastGravity.CENTER
+                                        );
                                         Navigator.push(
                                           context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  GestionCliente()),
+                                          MaterialPageRoute(builder: (context) => Hometiendas()),
                                         );
                                       },
 
@@ -278,14 +266,7 @@ class _ListaCompraState extends State<ListaCompra> {
                             );
                           });
 
-                        List nuevalista = [];
-                        for (int i = 0; i < widget.lista.length; i++) {
-                          nuevalista.add(widget.lista[i][0]);
-                        }
-                        datosventas.doc().set({
-                          'Producto': nuevalista,
-                          'ValorCompra': total
-                        });
+
                       },
                     ),
                   ),
