@@ -147,7 +147,7 @@ class Consultacliente extends StatefulWidget {
 class _ConsultaclienteState extends State<Consultacliente> {
 
   final Stream<QuerySnapshot> consultar=FirebaseFirestore.instance.collection('clientes').snapshots();
-
+ var pru='mike';
   @override
   Widget build(BuildContext context) {
 
@@ -161,10 +161,11 @@ class _ConsultaclienteState extends State<Consultacliente> {
           return Text('cargando...');
         }
 
+
+
         return ListView(
             children: snapshot.data!.docs.map((DocumentSnapshot document){
               Map<String,dynamic> data = document.data()! as Map<String,dynamic>;
-
               return Container(
                 color: Color(0xD775A1F5),
                 margin: EdgeInsets.only(top: 5),
@@ -202,6 +203,7 @@ class _ConsultaclienteState extends State<Consultacliente> {
       },
 
     );
+
   }
 }
 

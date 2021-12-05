@@ -12,21 +12,19 @@ import 'package:loginfinal/negocios.dart';
 import 'package:loginfinal/registrarclientes.dart';
 
 class Compras extends StatefulWidget {
-
   const Compras({Key? key}) : super(key: key);
-
   @override
   _ComprasState createState() => _ComprasState();
 }
-
 class _ComprasState extends State<Compras> {
   TextEditingController buscar=TextEditingController();
-
+  final List lista=[];
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
+
         appBar: AppBar(
           backgroundColor: Colors.amber,
           title: Row(
@@ -161,7 +159,6 @@ class _ComprasState extends State<Compras> {
     );
   }
 }
-
 class BuscarNegocio extends StatefulWidget {
   final String textdato;
 
@@ -170,20 +167,14 @@ class BuscarNegocio extends StatefulWidget {
   @override
   State<BuscarNegocio> createState() => _BuscarNegocioState();
 }
-
 class _BuscarNegocioState extends State<BuscarNegocio> {
   final List lista=[];
-
   var total;
-
   var _count=0;
-
   @override
   Widget build(BuildContext context) {
     final Stream<QuerySnapshot> consultar=FirebaseFirestore.instance.collection('productos').where('negocio', isEqualTo: widget.textdato).snapshots();
-
     return Column(
-
       children: [
         Expanded(
             flex: 4,
@@ -198,7 +189,6 @@ class _BuscarNegocioState extends State<BuscarNegocio> {
                     return Center(child: CircularProgressIndicator(),);
                   }
                   return ListView(
-
                       children: snapshot.data!.docs.map((DocumentSnapshot document){
                         Map<String, dynamic> data=document.data()!as Map<String, dynamic>;
                         return Column(
@@ -206,88 +196,39 @@ class _BuscarNegocioState extends State<BuscarNegocio> {
                               Container(
                                 margin: EdgeInsets.only(top: 10),
                                 height: 100,
-
                                 decoration: BoxDecoration(
-
                                 ),
                                 child: ListTile(
                                   title: Text(data['nombre'],),
                                   subtitle: Text(data['precio']),
                                   onTap: (){
                                     lista.add([data['nombre'],data['precio']]);
-                                    //lista.add(data['precio']);
                                     print(lista);
                                     _count=lista.length;
                                     setState(() {
                                       _count;
                                     });
                                   },
-
                                 ),
                               ),
-
                             ]
                         );
                       }
                       ).toList()
                   );
-
                 },
               ),
             ),
-
-
-
-        ),
-        /*Expanded(
-            flex: 4,
-            child: Container(
-              margin: EdgeInsets.only(bottom: 10),
-              padding: EdgeInsets.all(20),
-              height: 100,
-              color: Colors.deepOrange,
-             /* child: ElevatedButton.icon(
-                  onPressed: (){
-                    total=0;
-                    var tt;
-                    for(int i=0; i<lista.length;i++){
-                      tt=int.parse(lista[i][1]);
-                      total=tt+total;
-                      _counter =lista.length;
-                        print(_counter);
-                    }
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=>ListaCompra(lista: lista)));
-                  },
-                  icon: Icon(Icons.add_shopping_cart, size: 30, color: Colors.black,),
-                  label:Row(
-                    children: [
-                      Text("Terminar compra", textAlign: TextAlign.center,),
-                        Container(
-                            child: Text('$_counter'),
-                        ),
-                    ],
-                  ),
-              ),
-
-              */
-
-            ),
-
         ),
 
-         */
         FloatingActionButton.extended(
-          //label: const T
           backgroundColor: Colors.amber,
           onPressed: () {
-
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => ListaCompra(lista: lista)),
             );
           },
-
-          icon: Icon(Icons.add),
           label: Row(
             children: [
               Container(
@@ -298,19 +239,13 @@ class _BuscarNegocioState extends State<BuscarNegocio> {
                 child: Icon(Icons.add_shopping_cart),
               ),
               Container(
-
                 child: Text('$_count'),
               )
             ],
           ),
 
-
         ),
-
-
       ],
     );
-
-
   }
 }

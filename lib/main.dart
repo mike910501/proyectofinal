@@ -24,6 +24,9 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'APP Tiendas',
       theme: ThemeData(
+        colorScheme: ColorScheme.fromSwatch(
+          primarySwatch: Colors.brown,
+        )
       ),
       home: const Hometiendas(),
     );

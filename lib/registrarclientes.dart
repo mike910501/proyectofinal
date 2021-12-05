@@ -6,6 +6,7 @@ import 'package:loginfinal/categorianegocios.dart';
 import 'package:loginfinal/clientes.dart';
 import 'package:loginfinal/compraproductos.dart';
 import 'package:loginfinal/consultarproductostienda.dart';
+import 'package:loginfinal/listadearticulos.dart';
 import 'package:loginfinal/main.dart';
 import 'package:loginfinal/negocios.dart';
 
@@ -19,6 +20,7 @@ class GestionCliente extends StatefulWidget {
 
 class _GestionClienteState extends State<GestionCliente> {
 
+  final List lista=[];
   final codigo=TextEditingController();
   final nombre=TextEditingController();
   final direccion=TextEditingController();
@@ -29,6 +31,7 @@ class _GestionClienteState extends State<GestionCliente> {
 
   @override
   Widget build(BuildContext context) {
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
@@ -80,7 +83,6 @@ class _GestionClienteState extends State<GestionCliente> {
                       MaterialPageRoute(builder: (context)=>GestionCliente()));
                 },
               ),
-
               ListTile(
                 title: Text('Gestion Negocios'),
                 leading: Image.asset("imagenes/negocios.png"),
@@ -90,7 +92,6 @@ class _GestionClienteState extends State<GestionCliente> {
                       MaterialPageRoute(builder: (context)=>Negocios()));
                 },
               ),
-
               ListTile(
                 title: Text('Productos en Tienda'),
                 leading: Image.asset("imagenes/estante.png"),
@@ -124,6 +125,7 @@ class _GestionClienteState extends State<GestionCliente> {
         ),
 
         body: ListView(
+
           children: [
             Container(
               padding: EdgeInsets.all(20),
@@ -269,19 +271,23 @@ class _GestionClienteState extends State<GestionCliente> {
                       ),
 
                       onPressed: (){
-                        if(codigo.text.isEmpty||nombre.text.isEmpty||direccion.text.isEmpty||telefono.text.isEmpty||celular.text.isEmpty){
+
+
+                        if(codigo.text.isEmpty|nombre.text.isEmpty||direccion.text.isEmpty||telefono.text.isEmpty||celular.text.isEmpty){
                           Fluttertoast.showToast(msg: "Ingrese todos los campos",
                             toastLength: Toast.LENGTH_LONG,
                             gravity: ToastGravity.CENTER,
                           );
                         }
-                        else{
+                        else {
                           datoscliente.doc(codigo.text).set({
                             "nombre": nombre.text,
                             "direccion": direccion.text,
                             "telefono": telefono.text,
                             "celular": celular.text
                           });
+                        }
+
                           Fluttertoast.showToast(msg: "Datos guardados",
                               fontSize: 20,
                               backgroundColor: Colors.lightBlueAccent,
@@ -293,9 +299,12 @@ class _GestionClienteState extends State<GestionCliente> {
                           direccion.clear();
                           telefono.clear();
                           celular.clear();
-
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => ListaCompra(lista: lista)),
+                        );
                         }
-                      },
+
                     ),
                   ),
 
@@ -364,9 +373,13 @@ class _GestionClienteState extends State<GestionCliente> {
                 ],
               ),
             ),
+
           ],
         ),
       ),
     );
+
+
+
   }
 }
