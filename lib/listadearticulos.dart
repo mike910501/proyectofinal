@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import'package:fluttertoast/fluttertoast.dart';
 import 'package:loginfinal/main.dart';
 import 'package:loginfinal/registrarclientes.dart';
@@ -30,20 +31,160 @@ class ListaCompra extends StatefulWidget {
   ListaCompra({required this.lista});
   @override
   _ListaCompraState createState() => _ListaCompraState();
-
 }
-
 class _ListaCompraState extends State<ListaCompra> {
   String nom='';
   var total;
+  List transi=[];
   CollectionReference datosventas = FirebaseFirestore.instance.collection('ventas');
-  CollectionReference datoscliente=FirebaseFirestore.instance.collection('clientes');
-  final correo = TextEditingController();
-  final direccion = TextEditingController();
   final celular = TextEditingController();
   var _counter = 0;
+  @override
+  void initState() {
+    super.initState();
+  }
+void GetUsers()async{
+  final correo = TextEditingController();
+  final direccion = TextEditingController();
+    List Nom=[];
+    List Borrable=[];
+    CollectionReference collectionReference = FirebaseFirestore.instance.collection('clientes');
+  CollectionReference datoscliente = FirebaseFirestore .instance.collection ( 'clientes' );
+    QuerySnapshot users = await collectionReference.get();
+              if(users.docs.length!=0){
+                for(var doc in users.docs){
+                  Nom.add(doc.data());
+                }
+              }
+    showDialog(context: context, builder: (context) {
+      return Dialog(
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(40)),
+        elevation: 300,
+        backgroundColor: Colors.white,
+        child: Container(
+          height: 400,
+          child: Column(
+            children: [
+              Container(
+                child:
+                Container(
+                  child: Text('Finaliza tu compra',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 20),
+                  ),
+                  margin: EdgeInsets.all(25),
+                ),
+              ),
+              Builder(
+                  builder: (context) {
+                    return Container(
+                      child: TextField(
+                        controller: correo,
+                        decoration: InputDecoration(
+                          label: Text('Correo electronico'),
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                      height: 70,
+                      width: 200,
+                    );
+                  }
+                  ),
+              Container(
+                child: TextField(
+                  controller: direccion,
+                  decoration: InputDecoration(
+                    label: Text('Dirección de Entrega'),
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                width: 200,
+                height: 70,
+              ),
+              FloatingActionButton.extended(
+                //label: const T
+                backgroundColor: Colors.amber,
+                onPressed: () {
+                  for(var doc in users.docs){
+                    Map<String, dynamic> data=doc.data()!as Map<String, dynamic>;
+                    Borrable.add(data['nombre']);
+                    if(correo.text==''||direccion.text==''){
+                      Fluttertoast.showToast(
+                        msg: 'Debe inhgresar todos los valores',
+                        fontSize: 20,
+                        backgroundColor: Colors.amber,
+                        textColor: Colors.blueGrey,
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.CENTER,);}
+                    for (var i in Borrable){
+                      if(i==correo.text && direccion.text!=''){
+                        Fluttertoast.showToast(
+                            msg: "Su pedido ha sido registrado exitosamente" + "\n" + "Será enviado a la dirección: " + direccion.text,
+                            fontSize: 20,
+                            backgroundColor: Colors.amber,
+                            textColor: Colors.blueGrey,
+                            toastLength: Toast.LENGTH_SHORT,
+                            gravity: ToastGravity.CENTER,);
+                        datosventas.doc().set({
+                          'Producto': widget.lista,
+                          'ValorCompra': total,
+                        });
+                      }
+                    }
+                  }
+                  print(Borrable.length);
 
+                    for(var j in Borrable){
+                      if(correo.text!=j){
+                        transi.add(j);
+                        print(transi.length);
+                        }
+                    }
+                    if(Borrable.length==transi.length){
+                      Fluttertoast.showToast(
+                        msg: "Usted y Su pedido han sido registrado exitosamente" + "\n" + "Será enviado a la dirección: " + direccion.text,
+                        fontSize: 20,
+                        backgroundColor: Colors.amber,
+                        textColor: Colors.blueGrey,
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.CENTER,
+                      );
+                      datoscliente.doc().set({
+                        "nombre": correo.text,
+                        "direccion": direccion.text,
+                      });
+                    }
+                  correo.clear();
+                  direccion.clear();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => Hometiendas()),
+                  );
+                },
+                label: Row(
+                  children: [
+                    Container(
+                      child: Text(
+                          'Buy ' + total.toString()),
+                    ),
+                    Container(
+                      width: 40,
+                      child: Icon(Icons.shopping_cart),
+                    ),
+                    Container(
 
+                      child: Text('$_counter'),
+                    )
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    });
+}
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -69,10 +210,8 @@ class _ListaCompraState extends State<ListaCompra> {
                 );
               }
             ),
-
           ],
         ),
-
       ),
       body: Column(
           children: [
@@ -96,7 +235,6 @@ class _ListaCompraState extends State<ListaCompra> {
                       setState(() {
                         widget.lista.removeAt(i);
                       });
-
                     },
                   );
                 },
@@ -116,12 +254,10 @@ class _ListaCompraState extends State<ListaCompra> {
                           tt = int.parse(widget.lista[i][1]);
                           total = tt + total;
                           print(total);
-
                         }
                         return Container(
                           child: Text(''),
                         );
-
                       }
                   ),
                   Container(
@@ -132,6 +268,7 @@ class _ListaCompraState extends State<ListaCompra> {
                       icon: Icon(Icons.eleven_mp_outlined,
                         color: Colors.orange,),
                       onPressed: () {
+                        GetUsers();
                         total = 0;
                         var tt;
                         for (int i = 0; i < widget.lista.length; i++) {
@@ -154,118 +291,6 @@ class _ListaCompraState extends State<ListaCompra> {
                             _counter;
                           });
                         }
-                          showDialog(context: context, builder: (context) {
-                            return Dialog(
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(40)),
-                              elevation: 300,
-                              backgroundColor: Colors.white,
-                              child: Container(
-                                height: 400,
-                                child: Column(
-                                  children: [
-                                    Container(
-                                      child:
-                                      Container(
-                                        child: Text('Finaliza tu compra',
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(fontSize: 20),
-
-                                        ),
-                                        margin: EdgeInsets.all(25),
-                                      ),
-
-                                    ),
-                                    Builder(
-                                      builder: (context) {
-
-                                            nom=correo.text;
-
-                                        return Container(
-                                          child: TextField(
-                                            controller: correo,
-                                            decoration: InputDecoration(
-                                              label: Text('Correo electronico'),
-                                              border: OutlineInputBorder(),
-                                            ),
-                                          ),
-                                          height: 70,
-                                          width: 200,
-                                        );
-                                      }
-                                    ),
-                                    Container(
-
-                                      child: TextField(
-                                        controller: direccion,
-                                        decoration: InputDecoration(
-                                          label: Text('Dirección de Entrega'),
-                                          border: OutlineInputBorder(),
-                                        ),
-                                      ),
-                                      width: 200,
-                                      height: 70,
-                                    ),
-
-                                    FloatingActionButton.extended(
-
-                                      //label: const T
-                                      backgroundColor: Colors.amber,
-                                      onPressed: () {
-                                        List nuevalista = [];
-                                        for (int i = 0; i < widget.lista.length; i++) {
-                                          nuevalista.add(widget.lista[i][0]);
-                                        }
-                                        print('regitro de compra');
-                                        datosventas.doc().set({
-                                          'Producto': nuevalista,
-                                          'ValorCompra': total
-
-                                        }
-                                        );
-                                        datoscliente.doc().set({
-                                          "nombre": correo.text,
-                                          "direccion": direccion.text,
-                                        });
-                                        Fluttertoast.showToast(
-                                            msg: "Su pedido ha sido registrado exitosamente" + "\n" + "Será enviado a la dirección: " + direccion.text,
-                                            fontSize: 20,
-                                            backgroundColor: Colors.amber,
-                                            textColor: Colors.blueGrey,
-                                            toastLength: Toast.LENGTH_SHORT,
-                                            gravity: ToastGravity.CENTER
-                                        );
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(builder: (context) => Hometiendas()),
-                                        );
-                                      },
-
-                                      label: Row(
-                                        children: [
-                                          Container(
-                                            child: Text(
-                                                'Buy ' + total.toString()),
-                                          ),
-                                          Container(
-                                            width: 40,
-                                            child: Icon(Icons.shopping_cart),
-                                          ),
-                                          Container(
-
-                                            child: Text('$_counter'),
-                                          )
-                                        ],
-                                      ),
-
-                                    ),
-                                  ],
-                                ),
-                              ),
-
-                            );
-                          });
-
 
                       },
                     ),
@@ -278,6 +303,4 @@ class _ListaCompraState extends State<ListaCompra> {
       ),
     );
   }
-
-
 }

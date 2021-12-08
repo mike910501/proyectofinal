@@ -10,8 +10,10 @@ import 'package:loginfinal/productos.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-  runApp( MyApp());
+  await Firebase.initializeApp().then((value){
+    runApp( MyApp());
+  });
+
 }
 
 class MyApp extends StatelessWidget {
