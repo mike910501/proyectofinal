@@ -147,7 +147,7 @@ class Consultacliente extends StatefulWidget {
 class _ConsultaclienteState extends State<Consultacliente> {
 
   final Stream<QuerySnapshot> consultar=FirebaseFirestore.instance.collection('clientes').snapshots();
- var pru='mike';
+
   @override
   Widget build(BuildContext context) {
 
@@ -181,7 +181,6 @@ class _ConsultaclienteState extends State<Consultacliente> {
                           Icons.android_rounded,
                           color: Colors.white,
                           size: 35,
-
                         ),
                         radius: 23.0,
                         //backgroundImage:

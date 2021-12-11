@@ -1,12 +1,9 @@
-import 'dart:ui';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import'package:fluttertoast/fluttertoast.dart';
 import 'package:loginfinal/main.dart';
-import 'package:loginfinal/registrarclientes.dart';
-import 'package:loginfinal/validadorregistro.dart';
+
+
 
 
 class MostrarCarrito extends StatelessWidget {
@@ -130,6 +127,10 @@ void GetUsers()async{
                           'Producto': widget.lista,
                           'ValorCompra': total,
                         });
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => Hometiendas()),
+                        );
                       }
                     }
                   }
@@ -154,13 +155,14 @@ void GetUsers()async{
                         "nombre": correo.text,
                         "direccion": direccion.text,
                       });
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => Hometiendas()),
+                      );
                     }
                   correo.clear();
                   direccion.clear();
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => Hometiendas()),
-                  );
+
                 },
                 label: Row(
                   children: [
